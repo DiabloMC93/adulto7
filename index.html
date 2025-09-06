@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario de Enfermería (Parte 5)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .option-label.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body class="bg-gray-800 text-gray-200">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-4xl">
+        <header class="bg-gray-700 shadow-md rounded-lg p-6 mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-center text-teal-400">Cuestionario de Enfermería (Parte 5)</h1>
+        </header>
+
+        <!-- Scoreboard -->
+        <div class="bg-gray-700 shadow-md rounded-lg p-4 mb-6 flex justify-around text-center">
+            <div>
+                <p class="text-sm text-gray-400">ACIERTOS</p>
+                <p id="correct-score" class="text-2xl font-bold text-green-400">0</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-400">ERRORES</p>
+                <p id="incorrect-score" class="text-2xl font-bold text-red-400">0</p>
+            </div>
+        </div>
+
+        <main id="quiz-container">
+            <!-- La pregunta actual se insertará aquí -->
+        </main>
+        
+        <footer class="mt-8 text-center">
+            <button id="next-btn" class="hidden bg-teal-500 hover:bg-teal-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-400">
+                Siguiente Pregunta
+            </button>
+            <button id="restart-btn" class="hidden bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-400">
+                Reiniciar Test
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "1. Lo que diferencia a la Enfermera Comunitaria de la Enfermera de Salud Pública y la Enfermera de Atención Primaria es:",
+                options: { a: "Requiere más experiencia de trabajo.", b: "Aborda funciones de gestión, docencia, investigación y asistencia clínica.", c: "Enfatiza la participación comunitaria en los problemas de salud.", d: "Delega en la relación interniveles." },
+                answer: "c"
+            },
+            {
+                question: "2. El estado que permite a la familia conseguir el desarrollo de sus miembros y adaptarse a las situaciones de crisis, es lo que entendemos por:",
+                options: { a: "Normalización familiar.", b: "Participación en el proceso asistencial.", c: "Afrontamiento familiar.", d: "Salud familiar." },
+                answer: "d"
+            },
+            {
+                question: "3. Señala el diagnóstico de enfermería en el que las funciones psicosociales, espirituales y fisiológicas de la unidad familiar están crónicamente desorganizadas, lo que conduce a conflictos y negación de los problemas (entre otros):",
+                options: { a: "Disposición para mejorar los procesos familiares.", b: "Interrupción de los procesos familiares.", c: "Riesgo de deterioro de la vinculación.", d: "Procesos familiares disfuncionales." },
+                answer: "d"
+            },
+            {
+                question: "4. El cuidado informal de una persona dependiente puede tener una serie de consecuencias en la persona que lo ejerce, señala la incorrecta al respecto:",
+                options: { a: "Crecimiento personal, conocimiento de uno mismo, mayor implicación altruista.", b: "Facilidad para mantener e iniciar las relaciones sociales.", c: "Peor salud percibida, más dolor y más consumo de fármacos.", d: "Incremento del gasto, abandono temporal o definitivo del trabajo." },
+                answer: "b"
+            },
+            {
+                question: "5. El diagnóstico enfermero \"Riesgo de Cansancio del Rol de Cuidador\" (00062) debe ser usado cuando:",
+                options: { a: "Cuando el cuidador no desea seguir desempeñando este papel.", b: "Cuando el cuidador haga todo lo que esté a su alcance para reducir el riesgo, aunque este persista.", c: "Cuando el cuidador tenga una puntuación en la escala \"Índice de esfuerzo del cuidador\" de 3.", d: "Cuando el cuidador tenga que realizar cuidados complejos y duraderos." },
+                answer: "d"
+            },
+            {
+                question: "6. Sobre la educación terapéutica y la educación sanitaria es cierto que:",
+                options: { a: "La educación sanitaria va dirigida a las personas con enfermedades crónicas para evitar las complicaciones.", b: "La educación terapéutica tiene una serie de etapas que se pueden adaptar al proceso enfermero.", c: "La educación sanitaria debe realizarla sólo personal sanitario.", d: "La educación terapéutica tiene como uno de sus objetivos que los pacientes acudan a la consulta de enfermería." },
+                answer: "b"
+            },
+            {
+                question: "7. El diagnóstico enfermero 00078 Gestión ineficaz de la propia salud, NO debe utilizarse cuando:",
+                options: { a: "Cuando la persona decide abandonar el régimen terapéutico voluntariamente.", b: "Cuando transcurrido un tiempo suficiente desde la instauración de un régimen, la persona no es capaz de integrarlo en su cotidianidad.", c: "Si existe una relación de desconfianza con los profesionales que le atienden.", d: "Cuando tenga unas creencias contrarias al régimen terapéutico." },
+                answer: "a"
+            },
+            {
+                question: "8. La valoración funcional del adulto es fundamental para detectar posibles riesgos y deterioros de la movilidad. Para ello contamos con diversas escalas que nos ayudan en dicha tarea. Aquella que valora la marcha y el equilibrio es:",
+                options: { a: "Escala de Barthel.", b: "Cuestionario de MOS.", c: "Escala de Tinetti.", d: "Índice de Katz." },
+                answer: "c"
+            },
+            {
+                question: "9. La situación en que la persona puede sufrir una lesión inespecífica como consecuencia de las interacciones entre las condiciones ambientales y sus propios recursos adaptativos, es la definición del diagnóstico:",
+                options: { a: "Conflicto de decisiones.", b: "Riesgo de caídas.", c: "Riesgo de infección.", d: "Riesgo de lesión." },
+                answer: "d"
+            },
+            {
+                question: "10. ¿Cuál de los siguientes factores de riesgo para las enfermedades cardiovasculares favorece la fibrilación auricular?:",
+                options: { a: "Tabaquismo.", b: "Obesidad.", c: "Diabetes.", d: "Sedentarismo." },
+                answer: "b"
+            },
+            {
+                question: "11. Las enfermedades crónicas tienen una serie de características, señala la correcta al respecto:",
+                options: { a: "Aunque puede tardar tiempo, al final pueden tener cierto grado de curación.", b: "La multicausalidad hace referencia a diversas causas que dejan secuelas incurables.", c: "La importancia social que tienen se debe a la alta mortalidad que producen y al gran gasto sanitario que necesitan.", d: "B y C son ciertas." },
+                answer: "c"
+            },
+            {
+                question: "12. Sobre el seguimiento y cribado de complicaciones de los pacientes diabéticos en atención primaria es cierto que:",
+                options: { a: "Un paciente bien controlado se le realizará una visita cada 3 meses.", b: "Para detectar la posible nefropatía diabética se realizará cada dos años la determinación de creatinina y albúmina.", c: "El riesgo vascular se determina realizando exclusivamente un EKG.", d: "Para el cribado de la retinopatía diabética, se realizará exploraciones periódicas derivándose a atención hospitalarias en caso de alteraciones." },
+                answer: "d"
+            },
+            {
+                question: "13. La educación diabetológica es una de las grandes competencias de enfermería en la atención a la diabetes. Para la misma hay que tener en cuenta una metodología que incluye todos los siguientes aspectos menos:",
+                options: { a: "Puede ser individual, que se aplica fundamentalmente en la educación básica, o grupal, en la que se imparte educación básica o avanzada.", b: "Independientemente del programa, se recomiendan 3 sesiones de 60 minutos cada una.", c: "En la sesión 3 del programa básico se habla de la dieta diabética, realizando una encuesta alimentaria de 24 horas.", d: "En la sesión 5 del programa avanzado se trata de aspectos como el tabaquismo, cuidados de los pies y actividad física." },
+                answer: "b"
+            },
+            {
+                question: "14. En la prevención y control de la EPOC tenemos diversas líneas de actuación, entre las que no se encuentra:",
+                options: { a: "El cribado o diagnóstico precoz debe realizarse con la Escala de Borg y una analítica.", b: "El abandono del hábito tabáquico se recomienda en los tres tipos de prevenciones.", c: "A los pacientes con EPOC estable no se les debe administrar suplementos nutricionales.", d: "La prevención terciaria incluye la oxigenoterapia." },
+                answer: "a"
+            },
+            {
+                question: "15. La salud de la población inmigrante es un objeto de atención por parte de Enfermería, teniendo en cuenta que está determinada por (señala la correcta):",
+                options: { a: "Los determinantes socio-económicos, suelen tener un acceso al trabajo fácil y unas condiciones adecuadas del mismo.", b: "Determinantes biológicos, siendo importante los patógenos a los que se enfrentan en el país de recepción.", c: "Determinantes del sistema sanitario, conociendo que tienen facilidades para el acceso al mismo en el nuevo país.", d: "Determinantes culturales, sabiendo que deben acoger los cuidados y creencias de salud del país al que migran." },
+                answer: "b"
+            },
+            {
+                question: "16. Sobre la situación actual del consumo de drogas no es cierto que:",
+                options: { a: "A nivel nacional, la droga legal más consumida es el tabaco.", b: "La encuesta sobre Alcohol, Drogas y otras adicciones en España se realiza cada dos años.", c: "En España el cannabis es la droga ilegal más consumida y aceptada.", d: "Los hipnosedantes comienzan a consumirse a una edad más tardía." },
+                answer: "a"
+            },
+            {
+                question: "17. En la evolución hacia la discapacidad y la dependencia se avanza por determinadas situaciones que llevan a una limitación de la participación social entre otras, tenemos que tener en cuenta que (señala la correcta):",
+                options: { a: "La limitación de funcionamiento sustituye al término de minusvalía y alude a la limitación en la participación social de la persona.", b: "Las anomalías no son determinantes a la hora de determinar el grado de déficit de funcionamiento que presenta la persona.", c: "El déficit de funcionamiento representa la perspectiva del cuerpo respecto a la discapacidad.", d: "La limitación de la actividad representa la perspectiva social respecto a la discapacidad." },
+                answer: "c"
+            },
+            {
+                question: "18. Sobre la infección por vía respiratoria por Covid-19 no es cierto que:",
+                options: { a: "Podemos encontrar gran variedad de síntomas, entre los que pueden encontrarse síntomas dermatológicos y neurológicos.", b: "Podemos realizar un diagnóstico por antígeno virales, PCR o anticuerpos generados.", c: "Actualmente el Remdesivir, es el tratamiento de elección para pacientes hospitalizados y embarazadas.", d: "Las personas cuidadoras de pacientes infectados deben usar la mascarilla FPP2 o FPP3." },
+                answer: "c"
+            },
+            {
+                question: "19. La Ley de Promoción de la Autonomía y Atención a las Personas en situación de Dependencia reconoce una serie de prestaciones para las personas que se encuentran en situación de dependencia. Entre las vinculadas a servicios de atención y cuidados NO se encuentra:",
+                options: { a: "Teleasistencia.", b: "Servicio de ayuda a domicilio.", c: "Atención residencial.", d: "Prestación económica para cuidados en el entorno familiar." },
+                answer: "d"
+            },
+            {
+                question: "20. Podemos catalogar un pie de una persona diabética como de alto riesgo cuando presenta:",
+                options: { a: "Una neuropatía.", b: "Cuando la persona presenta un déficit visual.", c: "Si detectamos una práctica de riesgo.", d: "Si vemos la presencia de un callo." },
+                answer: "a"
+            },
+            {
+                question: "21. Entre los factores contribuyentes para las toxiinfecciones alimentarias NO es cierto que:",
+                options: { a: "Contaminación cruzada entre crudos y cocinados.", b: "Descongelación defectuosa, ya que se debe descongelar directamente del congelador al exterior.", c: "Escaso recalentamiento de los alimentos.", d: "Preparación de los alimentos con mucha antelación." },
+                answer: "b"
+            },
+            {
+                question: "22. La importancia de las ITS (Infecciones de Trasmisión Sexual) radica en uno de los estos aspectos:",
+                options: { a: "Por sus complicaciones tales como invalideces, secuelas, abortos, mortalidad sobre todo en edad adulta.", b: "Las tasas de morbilidad son bastante fiables ya que por ejemplo en España se declaran un grupo numeroso de ITS.", c: "Las ITS son un ejemplo de la relación entre las variables médicas, biológicas, culturales y políticas.", d: "Participación de factores epidemiológicos de tipo económico casi exclusivamente" },
+                answer: "c"
+            },
+            {
+                question: "23. Señale la afirmación correcta en relación a la tuberculosis:",
+                options: { a: "Podemos diagnosticarla con certeza con la prueba de Mantoux.", b: "El 85-90% de las personas que se infectan no desarrollan la enfermedad.", c: "Su agente causal no genera resistencia a los fármacos.", d: "El granuloma tuberculoso suele aparecer de forma preferente en el abdomen." },
+                answer: "b"
+            },
+            {
+                question: "24. Dentro de las medidas de prevención de las ITS encontramos especialmente el control de pacientes, éste se realiza mediante:",
+                options: { a: "Diagnóstico y tratamiento tras varios días de evolución.", b: "Educación sanitaria.", c: "Control de contactos.", d: "B y C son correctas." },
+                answer: "d"
+            },
+            {
+                question: "25. Uno de los siguientes NO es un mecanismo de transmisión del Paludismo (señala la incorrecta):",
+                options: { a: "Mosquito Anopheles macho.", b: "Transfusión sanguínea.", c: "Jeringuillas contaminadas (ACVP)", d: "Transplacentaria." },
+                answer: "a"
+            },
+            {
+                question: "26. Sobre las parasitosis más prevalentes es cierto que:",
+                options: { a: "Los niños y escolares son la población más susceptible para contraer la enterobiasis.", b: "El pediculus corpori es el más prevalente sobre todo en los países desarrollados.", c: "Al tratar la pediculosis tan sólo hay que aplicar la lendrera una vez tras el tratamiento.", d: "La malaria es una enfermedad que afecta de forma grave principalmente a personas adultas." },
+                answer: "a"
+            },
+            {
+                question: "27. En cuanto a los marcadores de riesgo de las enfermedades cardiovasculares podemos afirmar (señala la correcta):",
+                options: { a: "Aparecen con mayor frecuencia en los caucásicos que en los afroamericanos.", b: "Los hombres sufren más ICTUS y éstos son más incapacitantes que en las mujeres.", c: "El riesgo de ICTUS se dobla en cada década a partir de los 55 años.", d: "Los individuos con antecedentes de enfermedad coronaria tienen un riesgo aumentado sobre todo si son mujeres y a partir de los 40 años." },
+                answer: "c"
+            },
+            {
+                question: "28. ¿Cuál es el agente causal más importante de las gastroenteritis víricas en los adultos?",
+                options: { a: "El virus de Norwalk.", b: "El rotavirus.", c: "La Salmonella.", d: "Equinococosis." },
+                answer: "a"
+            },
+            {
+                question: "29. En la prevención secundaria de la EPOC encontramos como cierto que:",
+                options: { a: "Se debe sospechar de individuo mayor de 30 años, fumador de >1 paquete/día/año, aunque no tenga expectoración.", b: "Los pacientes con EPOC leve-moderada deben recibir la vacuna antineumocócica.", c: "A los pacientes con EPOC se les debe de administrar suplementos alimenticios.", d: "El screening debe hacerse a los pacientes de riesgo." },
+                answer: "d"
+            },
+            {
+                question: "30. El funcionamiento familiar es uno de los componentes que valoramos para analizar la salud familiar. Dentro del funcionamiento familiar estudiamos (señala la incorrecta):",
+                options: { a: "Las actividades de la vida diaria y las actividades instrumentales de la vida diaria.", b: "El desarrollo de los procesos familiares, centrándonos en el patrón de comunicaciones y de relaciones, así como en la relación con otros parientes o comunidad.", c: "El grado de lealtad familiar.", d: "Estudio del mantenimiento del hogar." },
+                answer: "a"
+            }
+        ];
+
+        const quizContainer = document.getElementById('quiz-container');
+        const nextButton = document.getElementById('next-btn');
+        const restartButton = document.getElementById('restart-btn');
+        const correctScoreElem = document.getElementById('correct-score');
+        const incorrectScoreElem = document.getElementById('incorrect-score');
+
+        let currentQuestionIndex = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            correctCount = 0;
+            incorrectCount = 0;
+            updateScoreboard();
+            showQuestion();
+            nextButton.classList.add('hidden');
+            restartButton.classList.add('hidden');
+        }
+        
+        function showQuestion() {
+            quizContainer.innerHTML = '';
+            nextButton.classList.add('hidden');
+
+            if (currentQuestionIndex >= quizData.length) {
+                showFinalResults();
+                return;
+            }
+
+            const item = quizData[currentQuestionIndex];
+            let questionHTML = `
+                <div class="bg-gray-700 shadow-md rounded-lg p-6 question-card">
+                    <p class="font-semibold text-lg mb-4">${item.question}</p>
+                    <div class="space-y-3 options-container">
+            `;
+            for(const key in item.options) {
+                questionHTML += `
+                    <label data-key="${key}" class="option-label flex items-center p-3 rounded-lg border border-gray-600 hover:bg-gray-600 transition cursor-pointer">
+                        <span class="ml-3 text-gray-300">${key.toUpperCase()}. ${item.options[key]}</span>
+                    </label>
+                `;
+            }
+            questionHTML += `</div></div>`;
+            quizContainer.innerHTML = questionHTML;
+
+            const options = quizContainer.querySelectorAll('.option-label');
+            options.forEach(option => {
+                option.addEventListener('click', handleOptionSelect);
+            });
+        }
+
+        function handleOptionSelect(event) {
+            const selectedLabel = event.currentTarget;
+            const userAnswer = selectedLabel.dataset.key;
+            const correctAnswer = quizData[currentQuestionIndex].answer;
+            const optionsContainer = selectedLabel.parentElement;
+
+            optionsContainer.querySelectorAll('.option-label').forEach(label => {
+                label.classList.add('disabled');
+            });
+
+            const correctLabel = optionsContainer.querySelector(`label[data-key="${correctAnswer}"]`);
+
+            if (userAnswer === correctAnswer) {
+                correctCount++;
+                selectedLabel.classList.remove('border-gray-600', 'hover:bg-gray-600');
+                selectedLabel.classList.add('bg-green-500/20', 'border-green-500');
+            } else {
+                incorrectCount++;
+                selectedLabel.classList.remove('border-gray-600', 'hover:bg-gray-600');
+                selectedLabel.classList.add('bg-red-500/20', 'border-red-500');
+                if (correctLabel) {
+                    correctLabel.classList.remove('border-gray-600', 'hover:bg-gray-600');
+                    correctLabel.classList.add('bg-green-500/20', 'border-green-500');
+                }
+            }
+
+            updateScoreboard();
+            nextButton.classList.remove('hidden');
+        }
+        
+        function showFinalResults() {
+            quizContainer.innerHTML = `
+                <div class="bg-gray-700 shadow-md rounded-lg p-6 text-center">
+                    <h2 class="text-2xl font-bold mb-4 text-teal-400">¡Test Completado!</h2>
+                    <p class="text-lg text-gray-300">Has finalizado el cuestionario.</p>
+                </div>
+            `;
+            nextButton.classList.add('hidden');
+            restartButton.classList.remove('hidden');
+        }
+
+        function updateScoreboard() {
+            correctScoreElem.textContent = correctCount;
+            incorrectScoreElem.textContent = incorrectCount;
+        }
+
+        nextButton.addEventListener('click', () => {
+            currentQuestionIndex++;
+            showQuestion();
+        });
+
+        restartButton.addEventListener('click', startQuiz);
+
+        // Initial start
+        startQuiz();
+    </script>
+</body>
+</html>
