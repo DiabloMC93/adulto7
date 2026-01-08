@@ -14,6 +14,9 @@
             pointer-events: none;
             opacity: 0.7;
         }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body class="bg-gray-800 text-gray-200">
@@ -23,16 +26,24 @@
             <h1 class="text-2xl sm:text-3xl font-bold text-center text-teal-400">Cuestionario de Enfermería (Parte 5)</h1>
         </header>
 
-        <!-- Scoreboard -->
-        <div class="bg-gray-700 shadow-md rounded-lg p-4 mb-6 flex justify-around text-center">
-            <div>
-                <p class="text-sm text-gray-400">ACIERTOS</p>
-                <p id="correct-score" class="text-2xl font-bold text-green-400">0</p>
+        <!-- Marcador de Puntuación y Progreso -->
+        <div class="bg-gray-700 shadow-md rounded-lg p-4 mb-6">
+            <div class="flex justify-around text-center mb-4">
+                <div>
+                    <p class="text-sm text-gray-400">ACIERTOS</p>
+                    <p id="correct-score" class="text-2xl font-bold text-green-400">0</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-400">ERRORES</p>
+                    <p id="incorrect-score" class="text-2xl font-bold text-red-400">0</p>
+                </div>
             </div>
-            <div>
-                <p class="text-sm text-gray-400">ERRORES</p>
-                <p id="incorrect-score" class="text-2xl font-bold text-red-400">0</p>
+            
+            <!-- Barra de Progreso -->
+            <div class="w-full bg-gray-600 rounded-full h-2.5">
+                <div id="progress-indicator" class="bg-teal-500 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
             </div>
+            <p id="question-counter" class="text-center text-xs text-gray-400 mt-2 uppercase tracking-widest font-semibold">Pregunta 0 de 0</p>
         </div>
 
         <main id="quiz-container">
@@ -208,6 +219,8 @@
         const restartButton = document.getElementById('restart-btn');
         const correctScoreElem = document.getElementById('correct-score');
         const incorrectScoreElem = document.getElementById('incorrect-score');
+        const questionCounterElem = document.getElementById('question-counter');
+        const progressIndicator = document.getElementById('progress-indicator');
 
         let currentQuestionIndex = 0;
         let correctCount = 0;
@@ -232,10 +245,18 @@
                 return;
             }
 
+            // Actualizar marcadores de progreso
+            const total = quizData.length;
+            const current = currentQuestionIndex + 1;
+            const percentage = (current / total) * 100;
+            
+            questionCounterElem.textContent = `Pregunta ${current} de ${total}`;
+            progressIndicator.style.width = `${percentage}%`;
+
             const item = quizData[currentQuestionIndex];
             let questionHTML = `
                 <div class="bg-gray-700 shadow-md rounded-lg p-6 question-card">
-                    <p class="font-semibold text-lg mb-4">${item.question}</p>
+                    <p class="font-semibold text-lg mb-4 text-white">${item.question}</p>
                     <div class="space-y-3 options-container">
             `;
             for(const key in item.options) {
@@ -285,10 +306,23 @@
         }
         
         function showFinalResults() {
+            questionCounterElem.textContent = "Test Finalizado";
+            progressIndicator.style.width = "100%";
+
             quizContainer.innerHTML = `
                 <div class="bg-gray-700 shadow-md rounded-lg p-6 text-center">
                     <h2 class="text-2xl font-bold mb-4 text-teal-400">¡Test Completado!</h2>
-                    <p class="text-lg text-gray-300">Has finalizado el cuestionario.</p>
+                    <p class="text-lg text-gray-300">Has finalizado el cuestionario de la Parte 5.</p>
+                    <div class="mt-6 grid grid-cols-2 gap-4">
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <p class="text-gray-400 text-sm">TOTAL ACIERTOS</p>
+                            <p class="text-2xl font-bold text-green-400">${correctCount}</p>
+                        </div>
+                        <div class="p-4 bg-gray-800 rounded-lg">
+                            <p class="text-gray-400 text-sm">PORCENTAJE</p>
+                            <p class="text-2xl font-bold text-teal-400">${Math.round((correctCount/quizData.length)*100)}%</p>
+                        </div>
+                    </div>
                 </div>
             `;
             nextButton.classList.add('hidden');
@@ -303,11 +337,12 @@
         nextButton.addEventListener('click', () => {
             currentQuestionIndex++;
             showQuestion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
 
         restartButton.addEventListener('click', startQuiz);
 
-        // Initial start
+        // Inicio inicial
         startQuiz();
     </script>
 </body>
